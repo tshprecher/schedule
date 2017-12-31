@@ -1,14 +1,14 @@
 package schedule
 
 import (
-	"strconv"
 	"fmt"
+	"strconv"
 )
 
 type SimTask struct {
 	Identifier int
-	UserId int
-	RuntimeMs int
+	UserId     int
+	RuntimeMs  int
 }
 
 func (s *SimTask) Id() string {
@@ -27,7 +27,7 @@ func Simulate(scheduler Scheduler, tasks []*SimTask) {
 	taskLatencyPerUser := make(map[int][]int)
 	runningTasks := map[ScheduledTask]int{}
 	for scheduler.Size() > 0 || len(runningTasks) > 0 {
-		if (scheduler.Size() > 0) {
+		if scheduler.Size() > 0 {
 			for nextTask := scheduler.Next(); nextTask != nil; nextTask = scheduler.Next() {
 				st := nextTask.Task().(*SimTask)
 				runningTasks[nextTask] = currentTimeMs + st.RuntimeMs
@@ -38,7 +38,7 @@ func Simulate(scheduler Scheduler, tasks []*SimTask) {
 			earliestCompTimeMs := -1
 			earliestCompTimeTasks := []ScheduledTask{}
 			for ta, tm := range runningTasks {
-				if (earliestCompTimeMs == -1 || tm < earliestCompTimeMs) {
+				if earliestCompTimeMs == -1 || tm < earliestCompTimeMs {
 					earliestCompTimeMs = tm
 					earliestCompTimeTasks = nil
 				}
@@ -48,7 +48,7 @@ func Simulate(scheduler Scheduler, tasks []*SimTask) {
 			}
 			if len(earliestCompTimeTasks) > 0 {
 				currentTimeMs += earliestCompTimeTasks[0].Task().(*SimTask).RuntimeMs
-				for i := range (earliestCompTimeTasks) {
+				for i := range earliestCompTimeTasks {
 					st := earliestCompTimeTasks[i].Task().(*SimTask)
 					endtimesPerUser[st.UserId] = append(endtimesPerUser[st.UserId], earliestCompTimeMs)
 					taskLatencyPerUser[st.UserId] = append(taskLatencyPerUser[st.UserId], currentTimeMs)
@@ -59,21 +59,19 @@ func Simulate(scheduler Scheduler, tasks []*SimTask) {
 		}
 	}
 	userIds := []int{}
-	for k := range(endtimesPerUser) {
+	for k := range endtimesPerUser {
 		userIds = append(userIds, k)
-		for i := len(userIds)-1; i > 0 && userIds[i] < userIds[i-1]; i-- {
+		for i := len(userIds) - 1; i > 0 && userIds[i] < userIds[i-1]; i-- {
 			temp := userIds[i]
 			userIds[i] = userIds[i-1]
 			userIds[i-1] = temp
 		}
 	}
 
-	for _, id := range(userIds) {
+	for _, id := range userIds {
 		et := endtimesPerUser[id]
-		fmt.Printf("user %d:\n", id)
-		fmt.Printf("\tclock time:\t\t\t %d ms\n", et[len(et)-1])
-		fmt.Printf("\tthroughput (tasks / sec):\t %f\n", float32(len(et)) / float32(et[len(et)-1]) * 1000)
+		fmt.Printf("\t\tuser %d:\n", id)
+		fmt.Printf("\t\t\tclock time:\t\t\t %d ms\n", et[len(et)-1])
+		fmt.Printf("\t\t\tthroughput (tasks / sec):\t %f\n", float32(len(et))/float32(et[len(et)-1])*1000)
 	}
 }
-
-
