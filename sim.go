@@ -70,14 +70,9 @@ func Simulate(scheduler Scheduler, tasks []*SimTask) {
 
 	for _, id := range(userIds) {
 		et := endtimesPerUser[id]
-		tl := taskLatencyPerUser[id]
-		totTaskLat := 0
-		for _, t := range tl {
-			totTaskLat += t
-		}
-		fmt.Printf("user %d\n", id)
-		fmt.Printf("\tavg   latency:\t %f ms\n", float32(totTaskLat) / float32(len(tl)))
-		fmt.Printf("\tclock time:\t %d ms\n", et[len(et)-1])
+		fmt.Printf("user %d:\n", id)
+		fmt.Printf("\tclock time:\t\t\t %d ms\n", et[len(et)-1])
+		fmt.Printf("\tthroughput (tasks / sec):\t %f\n", float32(len(et)) / float32(et[len(et)-1]) * 1000)
 	}
 }
 
