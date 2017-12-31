@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// userPartitioner partitions over user ids into FIFO schedulers, all with the same priority level.
 func userPartitioner(t schedule.Task) (key string, priority uint, factory schedule.SchedulerFactory) {
 	st := t.(*schedule.SimTask)
 	key = strconv.Itoa(st.UserId)
@@ -16,6 +17,7 @@ func userPartitioner(t schedule.Task) (key string, priority uint, factory schedu
 	return
 }
 
+// timeAndUserPartitioner partitions tasks into fast and slow lanes, with each lane partitioned with userParitioner.
 func timeAndUserPartitioner(t schedule.Task) (key string, priority uint, factory schedule.SchedulerFactory) {
 	st := t.(*schedule.SimTask)
 	key = "fast"
